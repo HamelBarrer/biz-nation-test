@@ -1,0 +1,89 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model UserRoles {
+  userRoleId Int      @id @default(autoincrement())
+  name       String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  User       Users[]
+}
+
+model Users {
+  userId          Int               @id @default(autoincrement())
+  fullname        String
+  birthdate       String
+  email           String
+  password        String
+  UserRole        UserRoles         @relation(fields: [userRoleId], references: [userRoleId])
+  userRoleId      Int
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+  ProgressCourses ProgressCourses[]
+  ProgressLessons ProgressLessons[]
+}
+
+model Courses {
+  courseId          Int               @id @default(autoincrement())
+  logo              String
+  title             String
+  description       String
+  publicacionDate   String
+  introductoryVideo String
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+  ProgressCourses   ProgressCourses[]
+}
+
+model Lessons {
+  lessonId        Int               @id @default(autoincrement())
+  title           String
+  description     String
+  video           String
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+  ProgressLessons ProgressLessons[]
+}
+
+model CourseStatus {
+  courseStatusId  Int               @id @default(autoincrement())
+  name            String
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+  ProgressCourses ProgressCourses[]
+  ProgressLessons ProgressLessons[]
+}
+
+model ProgressCourses {
+  progressCourseId Int          @id @default(autoincrement())
+  User             Users        @relation(fields: [userId], references: [userId])
+  userId           Int
+  Course           Courses      @relation(fields: [courseId], references: [courseId])
+  courseId         Int
+  CourseStatus     CourseStatus @relation(fields: [courseStatusId], references: [courseStatusId])
+  courseStatusId   Int
+  approvedDate     String?
+  createdAt        DateTime     @default(now())
+  updatedAt        DateTime     @updatedAt
+}
+
+model ProgressLessons {
+  progressLesson Int          @id @default(autoincrement())
+  User           Users        @relation(fields: [userId], references: [userId])
+  userId         Int
+  Lesson         Lessons      @relation(fields: [lessonId], references: [lessonId])
+  lessonId       Int
+  CourseStatus   CourseStatus @relation(fields: [courseStatusId], references: [courseStatusId])
+  courseStatusId Int
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+}
