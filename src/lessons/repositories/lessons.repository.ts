@@ -8,3 +8,14 @@ export const insertLessons = async (data: LessonsI) => {
     data: data,
   });
 };
+
+export const removeLessons = async (lessonId: number) => {
+  return await prisma.lessons.update({
+    data: {
+      isActive: false,
+    },
+    where: {
+      lessonId,
+    },
+  });
+};

@@ -2,7 +2,7 @@ import { Router } from 'express';
 import {
   verificationAdminRole,
   verificationJWTToken,
-} from '../../middlewares/auth.middleware';
+} from '../../../middlewares/auth.middleware';
 import {
   createCourse,
   createProgressCourses,
@@ -10,11 +10,11 @@ import {
   getCourse,
   getCourses,
   updateCourse,
-} from '../controllers/course.controller';
+} from '../../controllers/course.controller';
 
 const router = Router();
 
-router.get('/:courseId', getCourse);
+router.get('/:courseId', [verificationJWTToken], getCourse);
 router.get('/', getCourses);
 router.post('/', [verificationJWTToken, verificationAdminRole], createCourse);
 router.put('/:courseId', updateCourse);

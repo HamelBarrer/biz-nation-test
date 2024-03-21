@@ -1,30 +1,71 @@
 import { PrismaClient } from '@prisma/client';
-import { CourseI, ProgressCoursesI } from '../../types/course.type';
+import { CourseI, ProgressCoursesI } from '../types/course.type';
 
 const prisma = new PrismaClient();
 
-export const findCourseById = async (courseId: number) => {
-  return await prisma.courses.findUnique({
-    select: {
-      courseId: true,
-      logo: true,
-      title: true,
-      description: true,
-      publicacionDate: true,
-      introductoryVideo: true,
-      lessons: {
-        select: {
-          lessonId: true,
-          title: true,
-          description: true,
-          video: true,
+export const findCourseById = async (
+  courseId: number,
+  userId: number,
+  isAdmin: boolean,
+) => {
+  // Si el usuario es un estudiante
+  if (!isAdmin) {
+    const detalleCursoEstudiante = await prisma.courses.findFirst({
+      where: {
+        courseId: courseId,
+        isActive: true, // Solo cursos activos
+        progressCourses: {
+          some: { userId, isActive: true }, // Solo cursos con progreso activo para el estudiante
         },
       },
-    },
-    where: {
-      courseId,
-    },
-  });
+      include: {
+        lessons: {
+          // Incluir todas las lecciones, incluso las eliminadas (soft)
+          where: { isActive: true },
+        },
+        progressCourses: {
+          // Incluir el progreso del curso para el estudiante
+          where: { userId },
+        },
+      },
+    });
+
+    return detalleCursoEstudiante;
+  }
+
+  // Si el usuario es un Admin
+  if (isAdmin) {
+    const detalleCursoAdmin = await prisma.courses.findFirst({
+      where: { courseId: courseId },
+      include: {
+        lessons: true, // Incluir todas las lecciones, incluso las eliminadas (soft)
+      },
+    });
+
+    return detalleCursoAdmin;
+  }
+  throw new Error('Rol de usuario no reconocido');
+  // return await prisma.courses.findUnique({
+  //   select: {
+  //     courseId: true,
+  //     logo: true,
+  //     title: true,
+  //     description: true,
+  //     publicacionDate: true,
+  //     introductoryVideo: true,
+  //     lessons: {
+  //       select: {
+  //         lessonId: true,
+  //         title: true,
+  //         description: true,
+  //         video: true,
+  //       },
+  //     },
+  //   },
+  //   where: {
+  //     courseId,
+  //   },
+  // });
 };
 
 export const listCourses = async (userId: number) => {
@@ -147,7 +188,18 @@ export const updatedCourse = async (courseId: number, data: CourseI) => {
 };
 
 export const deletedCourse = async (courseId: number) => {
-  return await prisma.courses.delete({
+  return await prisma.courses.update({
+    data: {
+      isActive: false,
+    },
+    where: {
+      courseId,
+    },
+  });
+};
+
+export const findProgressCourseByIdCourse = async (courseId: number) => {
+  return await prisma.progressCourses.findMany({
     where: {
       courseId,
     },

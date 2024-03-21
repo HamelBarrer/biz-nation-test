@@ -2,7 +2,7 @@ import cors from 'cors';
 import express from 'express';
 
 import authRouter from './auth/routers/v1/auth.router';
-import coursesRouter from './courses/routers/course.router';
+import coursesRouter from './courses/routers/v1/course.router';
 
 const app = express();
 
