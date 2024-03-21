@@ -37,8 +37,10 @@ CREATE TABLE "Lessons" (
     "title" TEXT NOT NULL,
     "description" TEXT NOT NULL,
     "video" TEXT NOT NULL,
+    "courseId" INTEGER NOT NULL,
     "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" DATETIME NOT NULL
+    "updatedAt" DATETIME NOT NULL,
+    CONSTRAINT "Lessons_courseId_fkey" FOREIGN KEY ("courseId") REFERENCES "Courses" ("courseId") ON DELETE RESTRICT ON UPDATE CASCADE
 );
 
 -- CreateTable
