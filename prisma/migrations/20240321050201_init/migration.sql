@@ -2,6 +2,7 @@
 CREATE TABLE "UserRoles" (
     "userRoleId" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
     "name" TEXT NOT NULL,
+    "isActive" BOOLEAN NOT NULL DEFAULT true,
     "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" DATETIME NOT NULL
 );
@@ -14,6 +15,7 @@ CREATE TABLE "Users" (
     "email" TEXT NOT NULL,
     "password" TEXT NOT NULL,
     "userRoleId" INTEGER NOT NULL,
+    "isActive" BOOLEAN NOT NULL DEFAULT true,
     "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" DATETIME NOT NULL,
     CONSTRAINT "Users_userRoleId_fkey" FOREIGN KEY ("userRoleId") REFERENCES "UserRoles" ("userRoleId") ON DELETE RESTRICT ON UPDATE CASCADE
@@ -27,6 +29,7 @@ CREATE TABLE "Courses" (
     "description" TEXT NOT NULL,
     "publicacionDate" TEXT NOT NULL,
     "introductoryVideo" TEXT NOT NULL,
+    "isActive" BOOLEAN NOT NULL DEFAULT true,
     "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" DATETIME NOT NULL
 );
@@ -38,6 +41,7 @@ CREATE TABLE "Lessons" (
     "description" TEXT NOT NULL,
     "video" TEXT NOT NULL,
     "courseId" INTEGER NOT NULL,
+    "isActive" BOOLEAN NOT NULL DEFAULT true,
     "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" DATETIME NOT NULL,
     CONSTRAINT "Lessons_courseId_fkey" FOREIGN KEY ("courseId") REFERENCES "Courses" ("courseId") ON DELETE RESTRICT ON UPDATE CASCADE
@@ -47,6 +51,7 @@ CREATE TABLE "Lessons" (
 CREATE TABLE "CourseStatus" (
     "courseStatusId" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
     "name" TEXT NOT NULL,
+    "isActive" BOOLEAN NOT NULL DEFAULT true,
     "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" DATETIME NOT NULL
 );
@@ -58,6 +63,7 @@ CREATE TABLE "ProgressCourses" (
     "courseId" INTEGER NOT NULL,
     "courseStatusId" INTEGER NOT NULL,
     "approvedDate" TEXT,
+    "isActive" BOOLEAN NOT NULL DEFAULT true,
     "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" DATETIME NOT NULL,
     CONSTRAINT "ProgressCourses_userId_fkey" FOREIGN KEY ("userId") REFERENCES "Users" ("userId") ON DELETE RESTRICT ON UPDATE CASCADE,
@@ -71,6 +77,7 @@ CREATE TABLE "ProgressLessons" (
     "userId" INTEGER NOT NULL,
     "lessonId" INTEGER NOT NULL,
     "courseStatusId" INTEGER NOT NULL,
+    "isActive" BOOLEAN NOT NULL DEFAULT true,
     "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" DATETIME NOT NULL,
     CONSTRAINT "ProgressLessons_userId_fkey" FOREIGN KEY ("userId") REFERENCES "Users" ("userId") ON DELETE RESTRICT ON UPDATE CASCADE,

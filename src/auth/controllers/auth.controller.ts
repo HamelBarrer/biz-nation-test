@@ -17,7 +17,7 @@ export const login = async (req: Request, res: Response) => {
     return;
   }
 
-  const token = await creationToken(repository.userId);
+  const token = await creationToken(repository.userId, repository.userRoleId);
 
   res.status(200).json({ ...repository, token });
 };

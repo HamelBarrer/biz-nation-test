@@ -1,3 +1,5 @@
+import { LessonsI } from '../../lessons/types/lessons.type';
+
 export interface CourseI {
   logo: string;
   title: string;
@@ -7,10 +9,9 @@ export interface CourseI {
   lessions: LessonsI[];
 }
 
-export interface LessonsI {
-  lessonId: number;
-  title: string;
-  description: string;
-  video: string;
+export interface ProgressCoursesI {
+  userId: number;
   courseId: number;
+  courseStatusId: number;
+  approvedDate?: string;
 }

@@ -13,9 +13,10 @@ datasource db {
 model UserRoles {
   userRoleId Int      @id @default(autoincrement())
   name       String
+  isActive   Boolean  @default(true)
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
-  User       Users[]
+  user       Users[]
 }
 
 model Users {
@@ -24,12 +25,13 @@ model Users {
   birthdate       String
   email           String
   password        String
-  UserRole        UserRoles         @relation(fields: [userRoleId], references: [userRoleId])
+  userRole        UserRoles         @relation(fields: [userRoleId], references: [userRoleId])
   userRoleId      Int
+  isActive        Boolean           @default(true)
   createdAt       DateTime          @default(now())
   updatedAt       DateTime          @updatedAt
-  ProgressCourses ProgressCourses[]
-  ProgressLessons ProgressLessons[]
+  progressCourses ProgressCourses[]
+  progressLessons ProgressLessons[]
 }
 
 model Courses {
@@ -39,10 +41,11 @@ model Courses {
   description       String
   publicacionDate   String
   introductoryVideo String
+  isActive          Boolean           @default(true)
   createdAt         DateTime          @default(now())
   updatedAt         DateTime          @updatedAt
-  ProgressCourses   ProgressCourses[]
-  Lessons           Lessons[]
+  progressCourses   ProgressCourses[]
+  lessons           Lessons[]
 }
 
 model Lessons {
@@ -50,8 +53,9 @@ model Lessons {
   title           String
   description     String
   video           String
-  Courses         Courses           @relation(fields: [courseId], references: [courseId])
+  courses         Courses           @relation(fields: [courseId], references: [courseId])
   courseId        Int
+  isActive        Boolean           @default(true)
   createdAt       DateTime          @default(now())
   updatedAt       DateTime          @updatedAt
   ProgressLessons ProgressLessons[]
@@ -60,33 +64,36 @@ model Lessons {
 model CourseStatus {
   courseStatusId  Int               @id @default(autoincrement())
   name            String
+  isActive        Boolean           @default(true)
   createdAt       DateTime          @default(now())
   updatedAt       DateTime          @updatedAt
-  ProgressCourses ProgressCourses[]
-  ProgressLessons ProgressLessons[]
+  progressCourses ProgressCourses[]
+  progressLessons ProgressLessons[]
 }
 
 model ProgressCourses {
   progressCourseId Int          @id @default(autoincrement())
-  User             Users        @relation(fields: [userId], references: [userId])
+  user             Users        @relation(fields: [userId], references: [userId])
   userId           Int
-  Course           Courses      @relation(fields: [courseId], references: [courseId])
+  course           Courses      @relation(fields: [courseId], references: [courseId])
   courseId         Int
-  CourseStatus     CourseStatus @relation(fields: [courseStatusId], references: [courseStatusId])
+  courseStatus     CourseStatus @relation(fields: [courseStatusId], references: [courseStatusId])
   courseStatusId   Int
   approvedDate     String?
+  isActive         Boolean      @default(true)
   createdAt        DateTime     @default(now())
   updatedAt        DateTime     @updatedAt
 }
 
 model ProgressLessons {
   progressLesson Int          @id @default(autoincrement())
-  User           Users        @relation(fields: [userId], references: [userId])
+  user           Users        @relation(fields: [userId], references: [userId])
   userId         Int
-  Lesson         Lessons      @relation(fields: [lessonId], references: [lessonId])
+  lesson         Lessons      @relation(fields: [lessonId], references: [lessonId])
   lessonId       Int
-  CourseStatus   CourseStatus @relation(fields: [courseStatusId], references: [courseStatusId])
+  courseStatus   CourseStatus @relation(fields: [courseStatusId], references: [courseStatusId])
   courseStatusId Int
+  isActive       Boolean      @default(true)
   createdAt      DateTime     @default(now())
   updatedAt      DateTime     @updatedAt
 }

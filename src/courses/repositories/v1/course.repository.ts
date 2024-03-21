@@ -1,5 +1,5 @@
 import { PrismaClient } from '@prisma/client';
-import { CourseI } from '../../types/course.type';
+import { CourseI, ProgressCoursesI } from '../../types/course.type';
 
 const prisma = new PrismaClient();
 
@@ -12,7 +12,7 @@ export const findCourseById = async (courseId: number) => {
       description: true,
       publicacionDate: true,
       introductoryVideo: true,
-      Lessons: {
+      lessons: {
         select: {
           lessonId: true,
           title: true,
@@ -27,25 +27,51 @@ export const findCourseById = async (courseId: number) => {
   });
 };
 
-export const listCourses = async () => {
-  return await prisma.courses.findMany({
+export const listCourses = async (userId: number) => {
+  const courses = await prisma.courses.findMany({
     select: {
       courseId: true,
       logo: true,
       title: true,
-      description: true,
       publicacionDate: true,
       introductoryVideo: true,
-      Lessons: {
+      progressCourses: {
+        select: {
+          courseStatus: true,
+        },
+        where: {
+          userId: userId,
+        },
+      },
+      lessons: {
         select: {
           lessonId: true,
-          title: true,
-          description: true,
-          video: true,
         },
       },
     },
   });
+
+  const coursesWithLessonCount = courses.map((course) => ({
+    ...course,
+    lessonCount: course.lessons.length,
+  }));
+
+  const coursesWithCompletedLessons = await Promise.all(
+    coursesWithLessonCount.map(async (course) => {
+      const completedLessonsCount = await prisma.progressLessons.count({
+        where: {
+          userId: userId,
+          courseStatusId: { notIn: [1, 2] },
+        },
+      });
+      return {
+        ...course,
+        completedLessonsCount,
+      };
+    }),
+  );
+
+  return coursesWithCompletedLessons;
 };
 
 export const insertCourse = async (data: CourseI) => {
@@ -57,7 +83,7 @@ export const insertCourse = async (data: CourseI) => {
       description: true,
       publicacionDate: true,
       introductoryVideo: true,
-      Lessons: {
+      lessons: {
         select: {
           lessonId: true,
           title: true,
@@ -72,7 +98,7 @@ export const insertCourse = async (data: CourseI) => {
       description: data.description,
       publicacionDate: data.publicacionDate,
       introductoryVideo: data.introductoryVideo,
-      Lessons: {
+      lessons: {
         create: data.lessions,
       },
     },
@@ -88,7 +114,7 @@ export const updatedCourse = async (courseId: number, data: CourseI) => {
       description: true,
       publicacionDate: true,
       introductoryVideo: true,
-      Lessons: {
+      lessons: {
         select: {
           lessonId: true,
           title: true,
@@ -103,7 +129,7 @@ export const updatedCourse = async (courseId: number, data: CourseI) => {
       description: data.description,
       publicacionDate: data.publicacionDate,
       introductoryVideo: data.introductoryVideo,
-      Lessons: {
+      lessons: {
         updateMany: data.lessions.map((lesson) => ({
           where: { lessonId: lesson.lessonId },
           data: {
@@ -125,5 +151,11 @@ export const deletedCourse = async (courseId: number) => {
     where: {
       courseId,
     },
+  });
+};
+
+export const insertProgressCourses = async (data: ProgressCoursesI) => {
+  return await prisma.progressCourses.create({
+    data,
   });
 };

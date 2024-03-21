@@ -3,6 +3,7 @@ import {
   deletedCourse,
   findCourseById,
   insertCourse,
+  insertProgressCourses,
   listCourses,
   updatedCourse,
 } from '../repositories/v1/course.repository';
@@ -22,7 +23,7 @@ export const getCourse = async (req: Request, res: Response) => {
 };
 
 export const getCourses = async (_: Request, res: Response) => {
-  const repository = await listCourses();
+  const repository = await listCourses(1);
   if (repository.length === 0) {
     res.status(204).json();
     return;
@@ -50,4 +51,10 @@ export const deleteCourse = async (req: Request, res: Response) => {
   const repository = await deletedCourse(courseId);
 
   res.status(200).json(repository);
+};
+
+export const createProgressCourses = async (req: Request, res: Response) => {
+  const repository = await insertProgressCourses(req.body);
+
+  res.status(201).json(repository);
 };
